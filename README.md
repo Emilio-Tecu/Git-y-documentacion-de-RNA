@@ -1,2 +1,2 @@
 # Git-y-documentacion-de-RNA
-Tarea 1. Curso de redes neuronales
+Este repositorio contiene el código de red neuronal de **DeepLearningPython** integrado para la tarea 1.
