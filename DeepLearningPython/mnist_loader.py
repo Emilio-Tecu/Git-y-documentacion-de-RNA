@@ -14,6 +14,7 @@ Se divide en:
 import pickle
 import gzip
 import numpy as np
+import os
 
 def load_data():
     """
@@ -36,7 +37,8 @@ def load_data():
     ``datos_de_entrenamiento``. 
     Esto se hace en la función envoltorio ``load_data_wrapper()``.
     """
-    f = gzip.open('mnist.pkl.gz', 'rb')
+    ruta_mnist = os.path.join(os.path.dirname(__file__), 'mnist.pkl.gz')
+    f = gzip.open(ruta_mnist, 'rb')
     training_data, validation_data, test_data = pickle.load(f, encoding="latin1")
     f.close()
     return (training_data, validation_data, test_data)
