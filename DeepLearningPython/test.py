@@ -1,33 +1,40 @@
 """
-    Testing code for different neural network configurations.
-    Adapted for Python 3.5.2
+CÓDIGO DE PRUEBA PARA RED NEURONAL - CLASIFICACIÓN DE DÍGITOS MNIST
+Adaptado para Python 3.5.2
 
-    Usage in shell:
-        python3.5 test.py
+Uso en terminal:
+    python test.py
 
-    Network (network.py and network2.py) parameters:
-        2nd param is epochs count
-        3rd param is batch size
-        4th param is learning rate (eta)
+Parámetros de la red neuronal (network.py):
+    - 2do parámetro: número de épocas de entrenamiento
+    - 3er parámetro: tamaño del lote (batch size)
+    - 4to parámetro: tasa de aprendizaje (eta)
 
-    Author:
-        Michał Dobrzański, 2016
-        dobrzanski.michal.daniel@gmail.com
+Autor original:
+    Michał Dobrzański, 2016
+    dobrzanski.michal.daniel@gmail.com
+
+Modificado por:
+    Emilio
+    Repositorio: https://github.com/Emilio-Tecu/Git-y-documentacion-de-RNA.git
 """
 
 # ----------------------
-# - read the input data:
+# Carga del conjunto de datos MNIST:
 
 import mnist_loader
+# Se carga el dataser MNIST.
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
-training_data = list(training_data)
+training_data = list(training_data) # Para compatibilidad con la implementación.
 
 # ---------------------
-# - network.py example:
+# Entrenamiento de la red neuronal.
 import network
 
-
+# Se crea la red.
 net = network.Network([784, 30, 10])
+# Se entrena usando SGD, con 30 épocas, 10 el tamaño del mini-batch.
+# Y 3 el learning rate.
 net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
 
 
