@@ -35,8 +35,12 @@ class Network(object):
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x)
+        # Se implementa una mejora de inicialización de pesos.
+        # Se escalan los pesos para evitar saturación de neuronas a razón de
+        # Z muy grande.
+        self.weights = [np.random.randn(y, x) / np.sqrt(x) 
                         for x, y in zip(sizes[:-1], sizes[1:])]
+
         # Los bias y los weights inician con valores aleatorios con una distribución Gaussiana.
         # No se considera la primera capa de bias porque son los datos de entrada.
         # Se tiene un vector de biases y una matriz de weights.
