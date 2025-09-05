@@ -50,10 +50,17 @@ class Network(object):
         3. Se repite para cada capa
         Retorna: vector de activaciones de la última capa
         """
-        for b, w in zip(self.biases, self.weights):
+        for b, w in zip(self.biases[:-1], self.weights[:-1]):
             a = sigmoid(np.dot(w, a)+b)
+            # En este caso utilizamos sigmoide para todas las capas menos la última.
+            #Y en la última se usa softmax.
+            z = np.dot(self.weights[-1], a) + self.biases[-1]
+            a = softmax(z)
         return a
     # La función sigmoide se usa para tener continuidad en la transición de 0 a 1.
+
+
+
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
             test_data=None):
@@ -149,5 +156,9 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivada de la función sigmoide"""
     return sigmoid(z)*(1-sigmoid(z))
+
+def softmax(z):
+    exp_z = np.exp(z - np.max(z))  
+    return exp_z / np.sum(exp_z, axis=0)
 # Cada que utilicemos una función de activación, necesitamos la 
 # función misma y su derivada.
