@@ -44,6 +44,12 @@ class Network(object):
         # Los bias y los weights inician con valores aleatorios con una distribución Gaussiana.
         # No se considera la primera capa de bias porque son los datos de entrada.
         # Se tiene un vector de biases y una matriz de weights.
+        # Se agrregan variables para Adam.
+        self.m_w = [np.zeros(w.shape) for w in self.weights]
+        self.v_w = [np.zeros(w.shape) for w in self.weights]
+        self.m_b = [np.zeros(b.shape) for b in self.biases]
+        self.v_b = [np.zeros(b.shape) for b in self.biases]
+        self.t = 0
 
     def feedforward(self, a):
         """
@@ -95,7 +101,7 @@ class Network(object):
             else:
                 print("Epoch {} complete".format(j))
 
-    def update_mini_batch(self, mini_batch, eta):
+    def update_mini_batch(self, mini_batch, eta, beta1=0.9, beta2=0.999, epsilon=1e-8):
         """Va actualizando los pesos y biases de la red usando backpropagation
         y recibe un mini_batch de datos, para ajustar los parámetros
         en dirección opuesta al gradiente."""
@@ -105,10 +111,30 @@ class Network(object):
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [w-(eta/len(mini_batch))*nw
-                        for w, nw in zip(self.weights, nabla_w)]
-        self.biases = [b-(eta/len(mini_batch))*nb
-                    for b, nb in zip(self.biases, nabla_b)]
+        # Incrementamos contador de pasos.
+        self.t += 1
+        # Actualización Adam.
+        for i in range(len(self.weights)):
+            # Gradiente promedio en el mini batch
+            g_w = (1/len(mini_batch)) * nabla_w[i]
+            g_b = (1/len(mini_batch)) * nabla_b[i]
+        
+            # Momentos de primer orden
+            self.m_w[i] = beta1*self.m_w[i] + (1-beta1)*g_w
+            self.m_b[i] = beta1*self.m_b[i] + (1-beta1)*g_b
+        
+            # Momentos de segundo orden
+            self.v_w[i] = beta2*self.v_w[i] + (1-beta2)*(g_w**2)
+            self.v_b[i] = beta2*self.v_b[i] + (1-beta2)*(g_b**2)
+        
+            m_w_hat = self.m_w[i] / (1 - beta1**self.t)
+            m_b_hat = self.m_b[i] / (1 - beta1**self.t)
+            v_w_hat = self.v_w[i] / (1 - beta2**self.t)
+            v_b_hat = self.v_b[i] / (1 - beta2**self.t)
+        
+            # Actualización final
+            self.weights[i] -= eta * m_w_hat / (np.sqrt(v_w_hat) + epsilon)
+            self.biases[i]  -= eta * m_b_hat / (np.sqrt(v_b_hat) + epsilon)
 
     def backprop(self, x, y):
         """Aplica el algoritmo de backpropagation.
